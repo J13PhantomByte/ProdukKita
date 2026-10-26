@@ -152,47 +152,50 @@ $isEditing = $form['id'] !== '';
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f7f8fc">
+  <meta name="description" content="Dashboard ProdukKita untuk mengelola katalog, harga, stok, dan kategori produk.">
   <title>Manajemen Produk | ProdukKita</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link href="assets/style.css" rel="stylesheet">
 </head>
 <body>
-<nav class="topbar">
+<a class="skip-link" href="#main-content">Lewati ke konten utama</a>
+<nav class="topbar" aria-label="Navigasi utama">
   <div class="container topbar-inner">
     <a class="brand" href="index.php">ProdukKita<span>.</span></a>
     <span class="topbar-note">Dashboard katalog produk</span>
   </div>
 </nav>
-<main class="container py-4 py-lg-5">
+<main id="main-content" class="container py-4 py-lg-5">
   <header class="page-heading">
     <div><p class="eyebrow">MANAJEMEN KATALOG</p><h1>Daftar Produk</h1><p class="muted mb-0">Kelola produk, harga, stok, dan kategori dari satu tempat.</p></div>
     <a class="btn btn-primary btn-add" href="#product-form">+ Tambah Produk</a>
   </header>
 
   <?php if ($flash): ?><div class="alert alert-<?= e($flash['type']) ?>" role="status"><?= e($flash['message']) ?></div><?php endif; ?>
-  <?php if ($errors): ?><div class="alert alert-danger" role="alert"><strong>Periksa kembali data berikut:</strong><ul class="mb-0 mt-2"><?php foreach ($errors as $error): ?><li><?= e($error) ?></li><?php endforeach; ?></ul></div><?php endif; ?>
+  <?php if ($errors): ?><div class="alert alert-danger" role="alert" aria-labelledby="error-title" tabindex="-1"><strong id="error-title">Periksa kembali data berikut:</strong><ul class="mb-0 mt-2"><?php foreach ($errors as $error): ?><li><?= e($error) ?></li><?php endforeach; ?></ul><p class="mb-0 mt-2">Perbaiki data yang disebutkan, lalu pilih tombol simpan kembali.</p></div><?php endif; ?>
 
   <section class="panel form-panel" id="product-form" aria-labelledby="form-title">
     <div class="section-heading"><div><p class="eyebrow mb-1"><?= $isEditing ? 'PERBARUI DATA' : 'DATA BARU' ?></p><h2 id="form-title"><?= $isEditing ? 'Edit Produk' : 'Tambah Produk' ?></h2></div><?php if ($isEditing): ?><a class="btn btn-light btn-sm" href="index.php">Batal edit</a><?php endif; ?></div>
-    <form method="post" action="index.php<?= $isEditing ? '?edit=' . (int)$form['id'] : '' ?>" class="row g-3" autocomplete="off">
+    <form method="post" action="index.php<?= $isEditing ? '?edit=' . (int)$form['id'] : '' ?>" class="row g-3" autocomplete="on" aria-describedby="form-help">
+      <p id="form-help" class="form-intro">Kolom bertanda <span aria-hidden="true">*</span> wajib diisi. Gunakan informasi yang jelas agar produk mudah dikenali.</p>
       <input type="hidden" name="csrf" value="<?= e($_SESSION['csrf']) ?>">
       <input type="hidden" name="action" value="<?= $isEditing ? 'update' : 'create' ?>">
       <?php if ($isEditing): ?><input type="hidden" name="id" value="<?= (int)$form['id'] ?>"><?php endif; ?>
-      <div class="col-12 col-md-6"><label for="nama" class="form-label">Nama produk</label><input class="form-control" id="nama" name="nama" maxlength="120" required value="<?= e($form['nama']) ?>" placeholder="Contoh: Es Kopi Susu"></div>
-      <div class="col-12 col-md-6"><label for="barang" class="form-label">Kategori</label><select class="form-select" id="barang" name="barang" required><?php foreach ($allowedCategories as $category): ?><option value="<?= e($category) ?>" <?= $form['barang'] === $category ? 'selected' : '' ?>><?= e($category) ?></option><?php endforeach; ?></select></div>
-      <div class="col-12 col-sm-6 col-md-3"><label for="harga" class="form-label">Harga (Rupiah)</label><input class="form-control" id="harga" name="harga" type="number" min="0" max="2147483647" step="1" required value="<?= e($form['harga']) ?>" placeholder="15000"></div>
-      <div class="col-12 col-sm-6 col-md-3"><label for="stok" class="form-label">Stok</label><input class="form-control" id="stok" name="stok" type="number" min="0" max="100000000" step="1" required value="<?= e($form['stok']) ?>" placeholder="10"></div>
-      <div class="col-12 col-md-6"><label for="gambar" class="form-label">URL gambar</label><input class="form-control" id="gambar" name="gambar" type="url" maxlength="500" required value="<?= e($form['gambar']) ?>" placeholder="https://images.unsplash.com/..."><div class="form-text">Gunakan URL HTTPS dari images.unsplash.com.</div></div>
+      <div class="col-12 col-md-6"><label for="nama" class="form-label">Nama produk <span class="required-mark" aria-hidden="true">*</span></label><input class="form-control" id="nama" name="nama" maxlength="120" required aria-required="true" aria-describedby="nama-help" value="<?= e($form['nama']) ?>" placeholder="Contoh: Es Kopi Susu"><div class="form-text" id="nama-help">Maksimal 120 karakter.</div></div>
+      <div class="col-12 col-md-6"><label for="barang" class="form-label">Kategori <span class="required-mark" aria-hidden="true">*</span></label><select class="form-select" id="barang" name="barang" required aria-required="true"><?php foreach ($allowedCategories as $category): ?><option value="<?= e($category) ?>" <?= $form['barang'] === $category ? 'selected' : '' ?>><?= e($category) ?></option><?php endforeach; ?></select></div>
+      <div class="col-12 col-sm-6 col-md-3"><label for="harga" class="form-label">Harga (Rupiah) <span class="required-mark" aria-hidden="true">*</span></label><input class="form-control" id="harga" name="harga" type="number" min="0" max="2147483647" step="1" required aria-required="true" aria-describedby="harga-help" value="<?= e($form['harga']) ?>" placeholder="15000"><div class="form-text" id="harga-help">Masukkan angka tanpa titik atau simbol Rp.</div></div>
+      <div class="col-12 col-sm-6 col-md-3"><label for="stok" class="form-label">Stok <span class="required-mark" aria-hidden="true">*</span></label><input class="form-control" id="stok" name="stok" type="number" min="0" max="100000000" step="1" required aria-required="true" aria-describedby="stok-help" value="<?= e($form['stok']) ?>" placeholder="10"><div class="form-text" id="stok-help">Masukkan jumlah barang tersedia; gunakan 0 jika habis.</div></div>
+      <div class="col-12 col-md-6"><label for="gambar" class="form-label">URL gambar <span class="required-mark" aria-hidden="true">*</span></label><input class="form-control" id="gambar" name="gambar" type="url" maxlength="500" required aria-required="true" aria-describedby="gambar-help" value="<?= e($form['gambar']) ?>" placeholder="https://images.unsplash.com/..."><div class="form-text" id="gambar-help">Gunakan alamat HTTPS gambar dari images.unsplash.com.</div></div>
       <div class="col-12 d-flex flex-wrap gap-2"><button class="btn btn-primary" type="submit"><?= $isEditing ? 'Simpan Perubahan' : 'Simpan Produk' ?></button><?php if ($isEditing): ?><a class="btn btn-light" href="index.php">Batal</a><?php endif; ?></div>
     </form>
   </section>
 
-  <section class="catalog-section" aria-labelledby="catalog-title">
-    <div class="section-heading"><div><p class="eyebrow mb-1">KATALOG</p><h2 id="catalog-title">Produk tersimpan <span class="count-pill"><?= count($products) ?></span></h2></div></div>
+  <section class="catalog-section" aria-labelledby="catalog-title" aria-describedby="catalog-help">
+    <div class="section-heading"><div><p class="eyebrow mb-1">KATALOG</p><h2 id="catalog-title">Produk tersimpan <span class="count-pill" aria-label="<?= count($products) ?> produk"><?= count($products) ?></span></h2><p id="catalog-help" class="muted mb-0">Gunakan pencarian atau filter kategori untuk menemukan produk.</p></div></div>
     <form method="get" class="filter-bar" role="search">
-      <div class="search-wrap"><label class="visually-hidden" for="q">Cari produk</label><input class="form-control" id="q" name="q" value="<?= e($search) ?>" maxlength="100" placeholder="Cari nama atau kategori..."></div>
-      <div><label class="visually-hidden" for="kategori">Filter kategori</label><select class="form-select" id="kategori" name="kategori"><option value="">Semua kategori</option><?php foreach ($allowedCategories as $category): ?><option value="<?= e($category) ?>" <?= $categoryFilter === $category ? 'selected' : '' ?>><?= e($category) ?></option><?php endforeach; ?></select></div>
-      <button class="btn btn-outline-primary" type="submit">Cari</button><?php if ($search !== '' || $categoryFilter !== ''): ?><a class="btn btn-light" href="index.php">Reset</a><?php endif; ?>
+      <div class="search-wrap"><label for="q">Cari nama atau kategori produk</label><input class="form-control" id="q" name="q" type="search" value="<?= e($search) ?>" maxlength="100" placeholder="Contoh: kopi atau minuman"></div>
+      <div><label for="kategori">Filter berdasarkan kategori</label><select class="form-select" id="kategori" name="kategori"><option value="">Semua kategori</option><?php foreach ($allowedCategories as $category): ?><option value="<?= e($category) ?>" <?= $categoryFilter === $category ? 'selected' : '' ?>><?= e($category) ?></option><?php endforeach; ?></select></div>
+      <button class="btn btn-outline-primary" type="submit">Cari produk</button><?php if ($search !== '' || $categoryFilter !== ''): ?><a class="btn btn-light" href="index.php">Reset</a><?php endif; ?>
     </form>
 
     <?php if (!$products): ?><div class="empty-state"><h3>Produk belum ditemukan</h3><p class="muted mb-0">Coba kata kunci lain atau tambahkan produk baru.</p></div><?php else: ?>
@@ -200,15 +203,15 @@ $isEditing = $form['id'] !== '';
       <?php foreach ($products as $product): ?>
       <div class="col-6 col-md-4 col-xl-3"><article class="product-card">
         <img class="product-image" src="<?= e($product['gambar']) ?>" alt="<?= e($product['nama']) ?>" width="800" height="600" loading="lazy" decoding="async">
-        <div class="product-body"><span class="category-pill"><?= e($product['barang']) ?></span><h3><?= e($product['nama']) ?></h3><p class="stock-line">Stok <strong><?= (int)$product['stok'] ?></strong></p><p class="price">Rp<?= number_format((int)$product['harga'], 0, ',', '.') ?></p>
-          <div class="card-actions"><a class="btn btn-sm btn-outline-primary" href="index.php?edit=<?= (int)$product['id'] ?>#product-form">Edit</a><form method="post" action="index.php" class="delete-form"><input type="hidden" name="csrf" value="<?= e($_SESSION['csrf']) ?>"><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?= (int)$product['id'] ?>"><button class="btn btn-sm btn-outline-danger" type="submit" data-product-name="<?= e($product['nama']) ?>">Hapus</button></form></div>
+        <div class="product-body"><span class="category-pill"><?= e($product['barang']) ?></span><h3><?= e($product['nama']) ?></h3><p class="stock-line">Stok tersedia: <strong><?= (int)$product['stok'] ?> unit</strong></p><p class="price"><span class="visually-hidden">Harga: </span>Rp<?= number_format((int)$product['harga'], 0, ',', '.') ?></p>
+          <div class="card-actions"><a class="btn btn-sm btn-outline-primary" href="index.php?edit=<?= (int)$product['id'] ?>#product-form" aria-label="Edit produk <?= e($product['nama']) ?>">Edit</a><form method="post" action="index.php" class="delete-form"><input type="hidden" name="csrf" value="<?= e($_SESSION['csrf']) ?>"><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?= (int)$product['id'] ?>"><button class="btn btn-sm btn-outline-danger" type="submit" data-product-name="<?= e($product['nama']) ?>" aria-label="Hapus produk <?= e($product['nama']) ?>">Hapus</button></form></div>
         </div>
       </article></div>
       <?php endforeach; ?>
     </div>
     <?php endif; ?>
   </section>
-  <footer class="footer-note">ProdukKita · PHP Native, PDO, MySQL</footer>
+  <footer class="footer-note">ProdukKita · PHP Native, PDO, MySQL <span> | Dirancang dengan perhatian pada keterbacaan, navigasi keyboard, dan label yang jelas.</span></footer>
 </main>
 <script src="assets/app.js" defer></script>
 </body>
